@@ -43,17 +43,13 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def select_all():
+def list_heroes():
     query = """
         SELECT * from heroes
     """
-
     list_of_heroes = execute_query(query).fetchall()
-    
     for record in list_of_heroes:
         print(record[1])
-
-
 
 def create_new_hero():
     newName = input('New hero name: ')
@@ -71,11 +67,6 @@ def create_new_hero():
         print(f"Hero {newName} was born!")
     except:
         print('Sorry that didnt work')
-        
-
-#select_all()
-#create_new_hero()
-#kill_hero()
 
 def kill_hero():
     dyingStar = input('who should die?: ')
@@ -84,8 +75,12 @@ def kill_hero():
     query = """
         DELETE FROM heroes WHERE name=%s;
     """
-    kill_hero = execute_query(query, (dyingStar,)).fetchall()
-
+    try:
+        kill_hero = execute_query(query, (dyingStar,))
+        print(dyingStar, f"{bcolors.OKGREEN}was killed!")
+    except:
+        print(f"{bcolors.FAIL} no ones died.. did you enter the right name? do 'list_heroes' to see a list of names{bcolors.ENDC}")
+        
 
 def list_friendships():
     query = """
@@ -103,8 +98,6 @@ def list_friendships():
         hero2id = int(buddybuddy[x][7])
         hero2Name = str(buddybuddy[hero2id][1])
         print(hero1Name, f"{bcolors.WARNING} and{bcolors.ENDC}", hero2Name, f"{bcolors.WARNING} and{bcolors.ENDC}", relStat)
-
-#list_friendships()
 
 def make_friends():
     query = """
@@ -125,9 +118,6 @@ def make_friends():
     execute_query(query, (firsthero, secondhero, stat))
     print(f"{bcolors.OKGREEN}Success! do {bcolors.ENDC}{bcolors.OKBLUE}'list_friendships'{bcolors.ENDC}{bcolors.OKGREEN} to see the new connection{bcolors.ENDC}")
 
-
-
-
 def king_prompt():
     whatdo = input(f"{bcolors.WARNING}What would you like to do? (type 'help' for options): ")
     if whatdo == 'list_friendships':
@@ -142,6 +132,7 @@ def king_prompt():
     elif whatdo == 'help':
         mls = """function option(s):
             list_friendships(),
+            list_heroes,
             kill_hero(),
             create_new_hero(),
             make_friends(),
@@ -151,6 +142,9 @@ def king_prompt():
         king_prompt()
     elif whatdo == 'make_friends':
         make_friends()
+        king_prompt()
+    elif whatdo == 'list_heroes':
+        list_heroes()
         king_prompt()
     elif whatdo == 'stop':
         print(f"{bcolors.OKGREEN}STOPPED{bcolors.ENDC}")
